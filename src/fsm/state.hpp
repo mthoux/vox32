@@ -1,7 +1,7 @@
 #pragma once
 
-// Forward declaration pour éviter les inklusions circulaires
-class RadioController;
+// Forward declaration
+class Controller;
 
 class State {
 public:
@@ -11,7 +11,7 @@ public:
      * @brief Appelé UNE FOIS quand on entre dans cet état.
      * Sert à configurer le hardware (allumer LED, changer mode RF, etc.)
      */
-    virtual void enter(RadioController& controller) {}
+    virtual void enter(Controller& controller) {}
 
     /**
      * @brief Appelé EN BOUCLE tant que cet état est actif.
@@ -19,11 +19,11 @@ public:
      * @param controller Référence vers le RadioController pour demander un changement d'état.
      * @param dt Temps écoulé depuis le dernier appel (optionnel mais utile pour les timers).
      */
-    virtual void update(RadioController& controller, float dt) = 0;
+    virtual void update(Controller& controller, float dt) = 0;
 
     /**
      * @brief Appelé UNE FOIS quand on quitte cet état.
      * Sert à nettoyer (éteindre le micro, désactiver les amplis, etc.)
      */
-    virtual void exit(RadioController& controller) {}
+    virtual void exit(Controller& controller) {}
 };
