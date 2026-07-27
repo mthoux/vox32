@@ -2,94 +2,84 @@
 #include <SPI.h>
 #include <RF24.h>
 
-#define PIN_CE  4
-#define PIN_CSN 5
-#define PIN_PTT 16 
+#define PIN_CE        4
+#define PIN_CSN       5
+#define PIN_PTT       21 
+#define PIN_BLUE_LED  16 
+#define PIN_GREEN_LED 17 
 
 RF24 radio(PIN_CE, PIN_CSN);
 bool nrfInitialise = false;
 const byte adresse[6] = "00001";
 
-unsigned long compteurLoop = 0; // Pour compter les tours de boucle
-
 void setup() {
   Serial.begin(115200);
-  delay(2000); 
-  
-  Serial.println("\n==========================================");
-  Serial.println("🔄 DÉMARRAGE MODE AFFICHAGE CONTINU");
-  Serial.println("==========================================");
+  delay(1000); 
 
   pinMode(PIN_PTT, INPUT_PULLUP);
+  pinMode(PIN_GREEN_LED, OUTPUT);
+  pinMode(PIN_BLUE_LED, OUTPUT);
 
-  SPI.begin(18, 19, 23, PIN_CSN);
+  // Flash de démarrage
+  digitalWrite(PIN_GREEN_LED, HIGH);
+  digitalWrite(PIN_BLUE_LED, HIGH);
+  delay(300);
+  digitalWrite(PIN_GREEN_LED, LOW);
+  digitalWrite(PIN_BLUE_LED, LOW);
 
-  if (!radio.begin()) {
-    Serial.println("🔴 NRF24 : NON DÉTECTÉ au démarrage");
-    nrfInitialise = false;
-  } else {
-    Serial.println("🟢 NRF24 : DÉTECTÉ au démarrage !");
+  SPI.begin(18, 19, 23);
+
+  if (radio.begin()) {
     nrfInitialise = true;
     
-    radio.setPALevel(RF24_PA_MIN);
-    radio.setAutoAck(false);       
-    radio.setRetries(0, 0);        
+    // Configuration pour envoi direct sans attente d'Acknowledge
+    radio.setPALevel(RF24_PA_LOW);
+    radio.setAutoAck(false); 
+    radio.setRetries(0, 0); 
     
     radio.openWritingPipe(adresse);
     radio.openReadingPipe(1, adresse);
     radio.startListening();
+    
+    Serial.println("🟢 Radio prêt !");
+  } else {
+    Serial.println("🔴 Erreur NRF24");
   }
-
-  Serial.println("\n--- DÉBUT DE LA BOUCLE PERMANENTE ---");
 }
 
 void loop() {
-  compteurLoop++;
   int etatBouton = digitalRead(PIN_PTT);
 
-  // 1. AFFICHAGE EN BOUCLE DU STATUT (Toutes les 500 ms)
-  Serial.print("[Tour ");
-  Serial.print(compteurLoop);
-  Serial.print("] Pin 16 = ");
-  Serial.print(etatBouton);
-  
+  // --- MODE ÉMISSION ---
   if (etatBouton == LOW) {
-    Serial.print(" (LOW -> APPUI DÉTECTÉ !)");
-  } else {
-    Serial.print(" (HIGH -> Relâché)");
-  }
-
-  // 2. ACTION SI APPUYÉ
-  if (etatBouton == LOW) {
-    Serial.print(" ➔ 🎙️ MODE ÉMISSION... ");
+    digitalWrite(PIN_GREEN_LED, HIGH);
 
     if (nrfInitialise) {
       radio.stopListening();
       const char texte[] = "PING!";
       
-      // Envoi
       radio.write(&texte, sizeof(texte));
-      Serial.println("✅ Paquet envoyé !");
-
+      Serial.println("📡 Message 'PING!' envoyé !");
+      
       radio.startListening();
-    } else {
-      Serial.println("⚠️ (Radio non prêt)");
     }
   } 
-  // 3. ACTION SI RELÂCHÉ
+  // --- MODE ÉCOUTE ---
   else {
-    Serial.print(" ➔ 🎧 MODE ÉCOUTE... ");
+    digitalWrite(PIN_GREEN_LED, LOW);
 
     if (nrfInitialise && radio.available()) {
+      digitalWrite(PIN_BLUE_LED, HIGH);
+
       char texteRecu[32] = "";
       radio.read(&texteRecu, sizeof(texteRecu));
-      Serial.print("📩 REÇU: ");
+      
+      Serial.print("📩 Message reçu: ");
       Serial.println(texteRecu);
-    } else {
-      Serial.println(" Pas de message.");
+
+      delay(150);
+
+      digitalWrite(PIN_BLUE_LED, LOW);
     }
   }
-
-  // Pause de 500 ms pour que ce soit facile à lire à l'œil nu
-  delay(500); 
 }
