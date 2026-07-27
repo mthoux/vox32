@@ -1,15 +1,20 @@
 #pragma once
 
-#include "state.hpp"
+#include <RF24.h>
+#include <Arduino.h>
 #include <cstdint>
+
+#include "state.hpp"
+#include "pins.h"
 
 class Controller {
 private:
     State* currentState = nullptr;
     uint32_t lastTimeMs = 0;
+    RF24& radio;
 
 public:
-    Controller() = default;
+    Controller(RF24& r) : radio(r) {}
 
     /**
      * @brief Initialise le contrôleur avec l'état de démarrage (ex: StateIdle)
@@ -30,4 +35,6 @@ public:
      * @brief Permet de connaître l'état actuel (utile pour le debug/logs)
      */
     State* getCurrentState() const { return currentState; }
+
+    RF24& getRadio() { return radio; }
 };
