@@ -4,32 +4,32 @@
 #include "../controller.hpp"
 
 void StateRx::enter(Controller& controller) {
+    controller.getOutput().setRxLed(true);
 }
 
 void StateRx::update(Controller& controller, float dt) {
 
-    if(digitalRead(PIN_BTN) == LOW) {
+    if(controller.getInput().isButtonPressed()) {
         controller.changeState(StateTx::getInstance());
         return;
     }
 
-    RF24& radio = controller.getRadio();
+    IRadio& radio = controller.getRadio();
 
     if (radio.available()) {
-      digitalWrite(PIN_BLUE_LED, HIGH);
 
-      char texteRecu[32] = "";
-      radio.read(&texteRecu, sizeof(texteRecu));
+        uint8_t buffer[32] = {0};
+        radio.receive(buffer, sizeof(buffer));
       
-      Serial.print("📩 Message reçu: ");
-      Serial.println(texteRecu);
+        // Serial.print("📩 Message reçu: ");
+        // Serial.println(texteRecu);
 
-      digitalWrite(PIN_BLUE_LED, LOW);
-    } else {
-        controller.changeState(StateIdle::getInstance());
-        return;
-    }
+        } else {
+            controller.changeState(StateIdle::getInstance());
+            return;
+        }
 }
 
 void StateRx::exit(Controller& controller) {
+    controller.getOutput().setRxLed(false);
 }

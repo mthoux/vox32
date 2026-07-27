@@ -7,7 +7,7 @@ void StateIdle::enter(Controller& controller) {}
 
 void StateIdle::update(Controller& controller, float dt) {
 
-    if(digitalRead(PIN_BTN) == LOW) {
+    if(controller.getInput().isButtonPressed()) {
         controller.changeState(StateTx::getInstance());
         return;
     }

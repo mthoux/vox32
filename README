@@ -1,1 +1,8 @@
 # 📻 Vox32 - ESP32 Digital Walkie-Talkie
+
+Material : 
+
+Antenna     : NRF014L01 + adaptateur NRF24L01 3.3V
+Microphone  : INMP441
+Amplifier   : MAX98357A
+Speaker     : 8 Ohm 1W

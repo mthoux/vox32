@@ -1,50 +1,75 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <RF24.h>
-#include <pins.h>
+#include "pins.h"
+
+// FSM & Core
 #include "fsm/controller.hpp"
 #include "fsm/states/state_idle.hpp"
 
-RF24 radio(PIN_CE, PIN_SPI_CSN);
-Controller controller(radio);
-const byte adresse[6] = "00001";
+// Hardware Abstraction Layer (ESP32)
+#include "hal/esp32/esp32_input.hpp"
+#include "hal/esp32/esp32_output.hpp"
+#include "hal/esp32/esp32_radio.hpp"
+
+// 1. Instantiate physical NRF24 hardware instance
+RF24 hardwareRadio(PIN_CE, PIN_SPI_CSN);
+
+// 2. Instantiate HAL objects
+Esp32Input  espInput(PIN_BTN);
+Esp32Output espOutput(PIN_BLUE_LED, PIN_GREEN_LED);
+Esp32Radio  espRadio(hardwareRadio);
+
+// 3. Inject dependencies into Controller
+Controller controller(espInput, espOutput, espRadio);
+
+const byte radioAddress[6] = "00001";
 
 void setup() {
-  Serial.begin(115200);
-  delay(200); 
+    Serial.begin(115200);
+    delay(200);
 
-  pinMode(PIN_BTN, INPUT_PULLUP);
-  pinMode(PIN_GREEN_LED, OUTPUT);
-  pinMode(PIN_BLUE_LED, OUTPUT);
+    // Initialize inputs and outputs via HAL
+    espInput.init();
+    espOutput.init();
 
-  // Flash de démarrage
-  digitalWrite(PIN_GREEN_LED, HIGH);
-  digitalWrite(PIN_BLUE_LED, HIGH);
-  delay(300);
-  digitalWrite(PIN_GREEN_LED, LOW);
-  digitalWrite(PIN_BLUE_LED, LOW);
+    // Startup visual confirmation flash
+    espOutput.setRxLed(true);
+    espOutput.setTxLed(true);
+    delay(300);
+    espOutput.setRxLed(false);
+    espOutput.setTxLed(false);
 
-  SPI.begin(PIN_SPI_SCK, PIN_SPI_MOSI, PIN_SPI_MISO);
+    // Initialize SPI bus and Radio module
+    SPI.begin(PIN_SPI_SCK, PIN_SPI_MOSI, PIN_SPI_MISO);
 
-  if (radio.begin()) {
-    
-    // Configuration pour envoi direct sans attente d'Acknowledge
-    radio.setPALevel(RF24_PA_LOW);
-    radio.setAutoAck(false); 
-    radio.setRetries(0, 0); 
-    
-    radio.openWritingPipe(adresse);
-    radio.openReadingPipe(1, adresse);
-    radio.startListening();
-    
-    Serial.println("🟢 Radio prêt !");
-  } else {
-    Serial.println("🔴 Erreur NRF24");
-  }
+    if (hardwareRadio.begin()) {
+        // NRF24 Configuration
+        hardwareRadio.setPALevel(RF24_PA_LOW);
+        hardwareRadio.setAutoAck(false);
+        hardwareRadio.setRetries(0, 0);
 
-  controller.init(StateIdle::getInstance());
+        hardwareRadio.openWritingPipe(radioAddress);
+        hardwareRadio.openReadingPipe(1, radioAddress);
+        hardwareRadio.startListening();
+
+        Serial.println("🟢 Radio ready!");
+    } else {
+        Serial.println("🔴 NRF24 initialization error");
+    }
+
+    // Initialize FSM in IDLE state
+    controller.init(StateIdle::getInstance());
 }
 
 void loop() {
-  controller.update();
+    // Delta time calculation (dt)
+    static uint32_t lastTimeMs = millis();
+    uint32_t now = millis();
+
+    float dt = (now - lastTimeMs) / 1000.0f;
+    lastTimeMs = now;
+
+    // Update FSM controller
+    controller.update(dt);
 }

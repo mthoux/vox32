@@ -1,8 +1,10 @@
 #pragma once
 
-#include <RF24.h>
-#include <Arduino.h>
 #include <cstdint>
+
+#include "i_input.hpp"
+#include "i_output.hpp"
+#include "i_radio.hpp"
 
 #include "state.hpp"
 #include "pins.h"
@@ -10,11 +12,14 @@
 class Controller {
 private:
     State* currentState = nullptr;
-    uint32_t lastTimeMs = 0;
-    RF24& radio;
+
+    IInput& input;
+    IOutput& output;
+    IRadio& radio;
 
 public:
-    Controller(RF24& r) : radio(r) {}
+    Controller(IInput& inputDevice, IOutput& outputDevice, IRadio& radioDevice) : 
+        input(inputDevice), output(outputDevice), radio(radioDevice) {}
 
     /**
      * @brief Initialise le contrôleur avec l'état de démarrage (ex: StateIdle)
@@ -24,7 +29,7 @@ public:
     /**
      * @brief À appeler en boucle dans le main (while(true))
      */
-    void update();
+    void update(float dt);
 
     /**
      * @brief Effectue la transition vers un nouvel état
@@ -36,5 +41,7 @@ public:
      */
     State* getCurrentState() const { return currentState; }
 
-    RF24& getRadio() { return radio; }
+    IInput&  getInput()  { return input;  }
+    IOutput& getOutput() { return output; }
+    IRadio&  getRadio()  { return radio;  }
 };
