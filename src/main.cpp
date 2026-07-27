@@ -1,14 +1,9 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <RF24.h>
+#include <pins.h>
 
-#define PIN_CE        4
-#define PIN_CSN       5
-#define PIN_PTT       21 
-#define PIN_BLUE_LED  16 
-#define PIN_GREEN_LED 17 
-
-RF24 radio(PIN_CE, PIN_CSN);
+RF24 radio(PIN_CE, PIN_SPI_CSN);
 bool nrfInitialise = false;
 const byte adresse[6] = "00001";
 
@@ -16,7 +11,7 @@ void setup() {
   Serial.begin(115200);
   delay(1000); 
 
-  pinMode(PIN_PTT, INPUT_PULLUP);
+  pinMode(PIN_BTN, INPUT_PULLUP);
   pinMode(PIN_GREEN_LED, OUTPUT);
   pinMode(PIN_BLUE_LED, OUTPUT);
 
@@ -27,7 +22,7 @@ void setup() {
   digitalWrite(PIN_GREEN_LED, LOW);
   digitalWrite(PIN_BLUE_LED, LOW);
 
-  SPI.begin(18, 19, 23);
+  SPI.begin(PIN_SPI_SCK, PIN_SPI_MOSI, PIN_SPI_MISO);
 
   if (radio.begin()) {
     nrfInitialise = true;
@@ -48,7 +43,7 @@ void setup() {
 }
 
 void loop() {
-  int etatBouton = digitalRead(PIN_PTT);
+  int etatBouton = digitalRead(PIN_BTN);
 
   // --- MODE ÉMISSION ---
   if (etatBouton == LOW) {
