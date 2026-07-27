@@ -2,14 +2,16 @@
 #include <SPI.h>
 #include <RF24.h>
 #include <pins.h>
+#include "fsm/controller.hpp"
+#include "fsm/states/state_idle.hpp"
 
 RF24 radio(PIN_CE, PIN_SPI_CSN);
-bool nrfInitialise = false;
+Controller controller(radio);
 const byte adresse[6] = "00001";
 
 void setup() {
   Serial.begin(115200);
-  delay(1000); 
+  delay(200); 
 
   pinMode(PIN_BTN, INPUT_PULLUP);
   pinMode(PIN_GREEN_LED, OUTPUT);
@@ -25,7 +27,6 @@ void setup() {
   SPI.begin(PIN_SPI_SCK, PIN_SPI_MOSI, PIN_SPI_MISO);
 
   if (radio.begin()) {
-    nrfInitialise = true;
     
     // Configuration pour envoi direct sans attente d'Acknowledge
     radio.setPALevel(RF24_PA_LOW);
@@ -40,41 +41,10 @@ void setup() {
   } else {
     Serial.println("🔴 Erreur NRF24");
   }
+
+  controller.init(StateIdle::getInstance());
 }
 
 void loop() {
-  int etatBouton = digitalRead(PIN_BTN);
-
-  // --- MODE ÉMISSION ---
-  if (etatBouton == LOW) {
-    digitalWrite(PIN_GREEN_LED, HIGH);
-
-    if (nrfInitialise) {
-      radio.stopListening();
-      const char texte[] = "PING!";
-      
-      radio.write(&texte, sizeof(texte));
-      Serial.println("📡 Message 'PING!' envoyé !");
-      
-      radio.startListening();
-    }
-  } 
-  // --- MODE ÉCOUTE ---
-  else {
-    digitalWrite(PIN_GREEN_LED, LOW);
-
-    if (nrfInitialise && radio.available()) {
-      digitalWrite(PIN_BLUE_LED, HIGH);
-
-      char texteRecu[32] = "";
-      radio.read(&texteRecu, sizeof(texteRecu));
-      
-      Serial.print("📩 Message reçu: ");
-      Serial.println(texteRecu);
-
-      delay(150);
-
-      digitalWrite(PIN_BLUE_LED, LOW);
-    }
-  }
+  controller.update();
 }
