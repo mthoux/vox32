@@ -9,6 +9,8 @@ public:
         return instance;
     }
 
+    const char* getName() const override { return "Rx"; }
+
     void enter(Controller& controller) override;
     void update(Controller& controller, float dt) override;
     void exit(Controller& controller) override;

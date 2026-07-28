@@ -3,6 +3,7 @@
 #include "hal/interfaces/i_radio.hpp"
 #include <iostream>
 #include <cstring>
+#include <iomanip>
 
 class MockRadio : public IRadio {
 public:
@@ -26,10 +27,16 @@ public:
         return true;
     }
 
-    /// @brief Simulates packet transmission and logs output to console.
+    /// @brief Simulates packet transmission and logs output in hexadecimal format.
     bool send(const uint8_t* data, size_t len) override {
-        std::cout << "[MOCK RADIO] Transmitting " << len << " bytes: " 
-                  << reinterpret_cast<const char*>(data) << std::endl;
+        std::cout << "[MOCK RADIO] Transmitting " << len << " bytes (HEX): ";
+        for (size_t i = 0; i < len && i < 16; ++i) { // Show first 16 bytes to keep logs clean
+            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data[i]) << " ";
+        }
+        if (len > 16) {
+            std::cout << "...";
+        }
+        std::cout << std::dec << std::endl;
         return true;
     }
 

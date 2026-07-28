@@ -4,9 +4,9 @@ class IOutput {
 public:
     virtual ~IOutput() = default;
 
-    /// @brief Contrôle de la LED de réception (Bleue)
+    /// @brief Control the reception LED (Blue)
     virtual void setRxLed(bool active) = 0;
 
-    /// @brief Contrôle de la LED d'émission (Verte)
+    /// @brief Control the transmission LED (Green)
     virtual void setTxLed(bool active) = 0;
 };

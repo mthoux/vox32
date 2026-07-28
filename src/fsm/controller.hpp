@@ -13,6 +13,7 @@
 class Controller {
 private:
     State* currentState = nullptr;
+    float time_elapsed = 0;
 
     IInput& input;
     IOutput& output;
@@ -24,22 +25,22 @@ public:
         input(inputDevice), output(outputDevice), radio(radioDevice), micro(microDevice) {}
 
     /**
-     * @brief Initialise le contrôleur avec l'état de démarrage (ex: StateIdle)
+     * @brief Initialize the controller with the starting state (e.g., StateIdle)
      */
     void init(State& initialState);
 
     /**
-     * @brief À appeler en boucle dans le main (while(true))
+     * @brief To be called in a loop within main (while(true))
      */
     void update(float dt);
 
     /**
-     * @brief Effectue la transition vers un nouvel état
+     * @brief Perform the transition to a new state
      */
     void changeState(State& newState);
 
     /**
-     * @brief Permet de connaître l'état actuel (utile pour le debug/logs)
+     * @brief Get the current state (useful for debugging/logs)
      */
     State* getCurrentState() const { return currentState; }
 

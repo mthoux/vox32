@@ -8,22 +8,27 @@ public:
     virtual ~State() = default;
 
     /**
-     * @brief Appelé UNE FOIS quand on entre dans cet état.
-     * Sert à configurer le hardware (allumer LED, changer mode RF, etc.)
+     * @brief Returns the name of the state.
+     */
+    virtual const char* getName() const = 0;
+
+    /**
+     * @brief Called ONCE when entering this state.
+     * Used to configure hardware (turn on LED, change RF mode, etc.)
      */
     virtual void enter(Controller& controller) {}
 
     /**
-     * @brief Appelé EN BOUCLE tant que cet état est actif.
-     * Sert à lire les pins (Polling) et exécuter la logique.
-     * @param controller Référence vers le RadioController pour demander un changement d'état.
-     * @param dt Temps écoulé depuis le dernier appel (optionnel mais utile pour les timers).
+     * @brief Called in a LOOP as long as this state is active.
+     * Used to read pins (polling) and execute logic.
+     * @param controller Reference to the RadioController to request a state change.
+     * @param dt Time elapsed since the last call (optional but useful for timers).
      */
     virtual void update(Controller& controller, float dt) = 0;
 
     /**
-     * @brief Appelé UNE FOIS quand on quitte cet état.
-     * Sert à nettoyer (éteindre le micro, désactiver les amplis, etc.)
+     * @brief Called ONCE when exiting this state.
+     * Used to clean up (stop microphone, disable amplifiers, etc.)
      */
     virtual void exit(Controller& controller) {}
 };
