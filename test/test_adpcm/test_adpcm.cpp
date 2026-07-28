@@ -26,7 +26,7 @@ int main() {
     std::cout << "=== TEST ENCODEUR / DÉCODEUR ADPCM ===" << std::endl;
 
     // 1. Ouverture du fichier source
-    std::ifstream inputFile("chirp_16k.wav", std::ios::binary);
+    std::ifstream inputFile("test/data/chirp_16k.wav", std::ios::binary);
     if (!inputFile.is_open()) {
         std::cerr << "Erreur: Impossible d'ouvrir test_conde.wav !" << std::endl;
         std::cerr << "Assure-toi que le fichier est a la racine de l'execution." << std::endl;
@@ -37,7 +37,7 @@ int main() {
     inputFile.seekg(44, std::ios::beg);
 
     // 2. Ouverture du fichier de sortie décodé
-    std::ofstream outputFile("resultat_decode.wav", std::ios::binary);
+    std::ofstream outputFile("test/data/resultat_decode.wav", std::ios::binary);
     if (!outputFile.is_open()) {
         std::cerr << "Erreur: Impossible de créer resultat_decode.wav !" << std::endl;
         return 1;

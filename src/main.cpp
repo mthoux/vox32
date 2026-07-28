@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <RF24.h>
-#include "pins.h"
+#include "pins.hpp"
 
 // FSM & Core
 #include "fsm/controller.hpp"
@@ -11,6 +11,7 @@
 #include "hal/esp32/esp32_input.hpp"
 #include "hal/esp32/esp32_output.hpp"
 #include "hal/esp32/esp32_radio.hpp"
+#include "hal/mock/mock_micro.hpp"
 
 // 1. Instantiate physical NRF24 hardware instance
 RF24 hardwareRadio(PIN_CE, PIN_SPI_CSN);
@@ -19,9 +20,10 @@ RF24 hardwareRadio(PIN_CE, PIN_SPI_CSN);
 Esp32Input  espInput(PIN_BTN);
 Esp32Output espOutput(PIN_BLUE_LED, PIN_GREEN_LED);
 Esp32Radio  espRadio(hardwareRadio);
+MockMicro   mockMicro;
 
 // 3. Inject dependencies into Controller
-Controller controller(espInput, espOutput, espRadio);
+Controller controller(espInput, espOutput, espRadio, mockMicro);
 
 const byte radioAddress[6] = "00001";
 

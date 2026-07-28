@@ -4,10 +4,8 @@
 #include <iostream>
 
 void StateTx::enter(Controller& controller) {
-    // radio_set_mode_tx();
-    // microphone_enable(true);
-    // led_set_red();
     controller.getOutput().setTxLed(true);
+    controller.getMicro().start();
 }
 
 void StateTx::update(Controller& controller, float dt) {
@@ -25,7 +23,7 @@ void StateTx::update(Controller& controller, float dt) {
 }
 
 void StateTx::exit(Controller& controller) {
-    // microphone_enable(false);
     // send_tail_tone(); // Petit bip de fin
+    controller.getMicro().stop();
     controller.getOutput().setTxLed(false);
 }

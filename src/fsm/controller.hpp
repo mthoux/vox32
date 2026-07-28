@@ -5,9 +5,10 @@
 #include "i_input.hpp"
 #include "i_output.hpp"
 #include "i_radio.hpp"
+#include "i_micro.hpp"
 
 #include "state.hpp"
-#include "pins.h"
+#include "pins.hpp"
 
 class Controller {
 private:
@@ -16,10 +17,11 @@ private:
     IInput& input;
     IOutput& output;
     IRadio& radio;
+    IMicro& micro;
 
 public:
-    Controller(IInput& inputDevice, IOutput& outputDevice, IRadio& radioDevice) : 
-        input(inputDevice), output(outputDevice), radio(radioDevice) {}
+    Controller(IInput& inputDevice, IOutput& outputDevice, IRadio& radioDevice, IMicro& microDevice) : 
+        input(inputDevice), output(outputDevice), radio(radioDevice), micro(microDevice) {}
 
     /**
      * @brief Initialise le contrôleur avec l'état de démarrage (ex: StateIdle)
@@ -44,4 +46,5 @@ public:
     IInput&  getInput()  { return input;  }
     IOutput& getOutput() { return output; }
     IRadio&  getRadio()  { return radio;  }
+    IMicro&  getMicro()  { return micro;  }
 };
