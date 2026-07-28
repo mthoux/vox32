@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i_input.hpp"
+#include "hal/interfaces/i_input.hpp"
 
 class MockInput : public IInput {
 public:

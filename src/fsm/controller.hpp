@@ -2,10 +2,10 @@
 
 #include <cstdint>
 
-#include "i_input.hpp"
-#include "i_output.hpp"
-#include "i_radio.hpp"
-#include "i_micro.hpp"
+#include "hal/interfaces/i_input.hpp"
+#include "hal/interfaces/i_output.hpp"
+#include "hal/interfaces/i_radio.hpp"
+#include "hal/interfaces/i_micro.hpp"
 
 #include "state.hpp"
 #include "pins.hpp"

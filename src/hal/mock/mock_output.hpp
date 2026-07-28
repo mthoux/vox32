@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i_output.hpp"
+#include "hal/interfaces/i_output.hpp"
 #include <iostream>
 
 class MockOutput : public IOutput {

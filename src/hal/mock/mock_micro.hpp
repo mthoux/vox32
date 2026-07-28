@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i_micro.hpp"
+#include "hal/interfaces/i_micro.hpp"
 #include <iostream>
 
 class MockMicro : public IMicro {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i_radio.hpp"
+#include "hal/interfaces/i_radio.hpp"
 #include <RF24.h>
 
 class Esp32Radio : public IRadio {
