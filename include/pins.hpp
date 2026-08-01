@@ -12,7 +12,7 @@ constexpr uint8_t PIN_WS          = 25;
 constexpr uint8_t PIN_SD          = 32;
 constexpr uint8_t PIN_I2S_SCK     = 33;
 
-// Ampli
+// Ampli MAX98357A
 constexpr uint8_t PIN_LRC         = 26;
 constexpr uint8_t PIN_BCLK        = 27;
 constexpr uint8_t PIN_DIN         = 22;

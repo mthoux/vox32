@@ -12,6 +12,7 @@
 #include "hal/esp32/esp32_output.hpp"
 #include "hal/esp32/esp32_radio.hpp"
 #include "hal/mock/mock_micro.hpp"
+#include "hal/mock/mock_speaker.hpp"
 
 // 1. Instantiate physical NRF24 hardware instance
 RF24 hardwareRadio(PIN_CE, PIN_SPI_CSN);
@@ -21,9 +22,10 @@ Esp32Input  espInput(PIN_BTN);
 Esp32Output espOutput(PIN_BLUE_LED, PIN_GREEN_LED);
 Esp32Radio  espRadio(hardwareRadio);
 MockMicro   mockMicro;
+MockSpeaker mockSpeaker;
 
 // 3. Inject dependencies into Controller
-Controller controller(espInput, espOutput, espRadio, mockMicro);
+Controller controller(espInput, espOutput, espRadio, mockMicro, mockSpeaker);
 
 const byte radioAddress[6] = "00001";
 

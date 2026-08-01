@@ -6,6 +6,7 @@
 #include "hal/interfaces/i_output.hpp"
 #include "hal/interfaces/i_radio.hpp"
 #include "hal/interfaces/i_micro.hpp"
+#include "hal/interfaces/i_speaker.hpp"
 
 #include "state.hpp"
 #include "pins.hpp"
@@ -19,10 +20,11 @@ private:
     IOutput& output;
     IRadio& radio;
     IMicro& micro;
+    ISpeaker& speaker;
 
 public:
-    Controller(IInput& inputDevice, IOutput& outputDevice, IRadio& radioDevice, IMicro& microDevice) : 
-        input(inputDevice), output(outputDevice), radio(radioDevice), micro(microDevice) {}
+    Controller(IInput& inputDevice, IOutput& outputDevice, IRadio& radioDevice, IMicro& microDevice, ISpeaker& speakerDevice) : 
+        input(inputDevice), output(outputDevice), radio(radioDevice), micro(microDevice), speaker(speakerDevice) {}
 
     /**
      * @brief Initialize the controller with the starting state (e.g., StateIdle)
