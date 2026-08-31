@@ -1,4 +1,4 @@
-# 📻 Vox32 - ESP32 Digital Walkie-Talkie
+# Vox32 - ESP32 Digital Walkie-Talkie
 
 Vox32 (Contraction of Voice in Latin + 32 from ESP32) is a personal hobby project exploring the idea of a digital walkie-talkie built around an ESP32.
 
